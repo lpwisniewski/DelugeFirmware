@@ -18,7 +18,8 @@
 #ifndef OverviewModeUI_h
 #define OverviewModeUI_h
 
-#include <ClipNavigationTimelineView.h>
+#include <stdint.h>
+#include "ClipNavigationTimelineView.h"
 
 class Editor;
 class InstrumentClip;

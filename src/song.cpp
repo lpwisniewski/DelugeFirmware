@@ -37,6 +37,7 @@
 //#include <algorithm>
 #include <string.h>
 #include <SessionView.h>
+#include <PerformanceView.h>
 #include "playbackhandler.h"
 #include "uart.h"
 #include "midiengine.h"

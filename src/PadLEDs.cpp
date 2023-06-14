@@ -23,6 +23,7 @@
 #include "MenuItemColour.h"
 #include "song.h"
 #include "SessionView.h"
+#include "PerformanceView.h"
 #include "AudioClip.h"
 #include "InstrumentClipView.h"
 #include "WaveformRenderer.h"

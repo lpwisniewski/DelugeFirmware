@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2023 Synthstrom Audible Limited
+ * Copyright © 2014-2023 Synthstrom Audible Limited
  *
  * This file is part of The Synthstrom Audible Deluge Firmware.
  *
@@ -13,34 +13,32 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 
-#ifndef CLIPVIEW_H_
-#define CLIPVIEW_H_
+#ifndef OverviewModeUI_h
+#define OverviewModeUI_h
 
-#include "ClipNavigationTimelineView.h"
 #include <stdint.h>
+#include "ClipNavigationTimelineView.h"
 
-class Action;
+class Editor;
+class InstrumentClip;
+class Clip;
+class ModelStack;
 
-class ClipView : public ClipNavigationTimelineView {
+extern float getTransitionProgress();
+
+// Clip Group colours
+extern const uint8_t numDefaultClipGroupColours;
+extern const uint8_t defaultClipGroupColours[];
+
+class PerformanceView final : public RootUI {
 public:
-	ClipView();
-
-	unsigned int getMaxZoom();
-	uint32_t getMaxLength();
-	int horizontalEncoderAction(int offset);
-	int32_t getLengthChopAmount(int32_t square);
-	int32_t getLengthExtendAmount(int32_t square);
+	PerformanceView();
+	bool opened();
 	void focusRegained();
-	int buttonAction(int x, int y, bool on, bool inCardRoutine);
-
-protected:
-	int getTickSquare();
-
-private:
-	Action* lengthenClip(int32_t newLength);
-	Action* shortenClip(int32_t newLength);
 };
 
-#endif /* CLIPVIEW_H_ */
+extern PerformanceView performanceView;
+
+#endif

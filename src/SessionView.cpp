@@ -15,7 +15,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ArrangerView.h>
+#include "ArrangerView.h"
 #include <AudioEngine.h>
 #include <AudioFileManager.h>
 #include <ClipInstance.h>

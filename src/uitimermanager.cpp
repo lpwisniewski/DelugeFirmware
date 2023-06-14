@@ -28,6 +28,7 @@
 #include "IndicatorLEDs.h"
 #include "ClipMinder.h"
 #include "SessionView.h"
+#include "PerformanceView.h"
 #include "playbackhandler.h"
 
 #if HAVE_OLED

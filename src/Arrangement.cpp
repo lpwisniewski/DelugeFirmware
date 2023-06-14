@@ -21,6 +21,7 @@
 #include <InstrumentClip.h>
 #include <ParamManager.h>
 #include <SessionView.h>
+#include <PerformanceView.h>
 #include "Arrangement.h"
 #include "song.h"
 #include "playbackhandler.h"

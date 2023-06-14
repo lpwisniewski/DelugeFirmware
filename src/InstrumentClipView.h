@@ -18,7 +18,8 @@
 #ifndef EditModeUI_h
 #define EditModeUI_h
 
-#include <ClipView.h>
+#include <stdint.h>
+#include "ClipView.h"
 #include "definitions.h"
 #include "CopiedParamAutomation.h"
 #include "InstrumentClipMinder.h"

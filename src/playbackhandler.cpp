@@ -30,6 +30,7 @@
 #include <sounddrum.h>
 #include <soundinstrument.h>
 #include <SessionView.h>
+#include <PerformanceView.h>
 #include "CVEngine.h"
 #include "soundeditor.h"
 #include "View.h"
