@@ -272,7 +272,8 @@ public:
 	inline bool isFillModeActive() { return fillModeActive; }
 	void changeFillMode(bool on);
 	void loadNextSong();
-	void setClipLength(Clip* clip, uint32_t newLength, Action* action, bool mayReSyncClip = true);
+	void setClipLength(Clip* clip, uint32_t newLength, Action* action, bool mayReSyncClip = true,
+	                   bool mayResumeClip = true, bool mayChangeClipInstances = true);
 	void doubleClipLength(InstrumentClip* clip, Action* action = nullptr);
 	Clip* getClipWithOutput(Output* output, bool mustBeActive = false, Clip* excludeClip = nullptr);
 	Error readFromFile(Deserializer& reader);
@@ -346,7 +347,7 @@ public:
 	void resumeClipsClonedForArrangementRecording();
 	void setParamsInAutomationMode(bool newState);
 	bool shouldOldOutputBeReplaced(Clip* clip, Availability* availabilityRequirement = nullptr);
-	Output* navigateThroughPresetsForInstrument(Output* output, int32_t offset);
+	Output* navigateThroughPresetsForInstrument(Output* output, int32_t offset, Clip* displayClip = nullptr);
 	void instrumentSwapped(Instrument* newInstrument);
 	Instrument* changeOutputType(Instrument* oldInstrument, OutputType newOutputType);
 	AudioOutput* getFirstAudioOutput();

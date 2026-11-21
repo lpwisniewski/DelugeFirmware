@@ -971,7 +971,10 @@ void Song::loadNextSong() {
 
 // If action is NULL, that means this is being called as part of an undo, so don't do any extra stuff.
 // Currently mayReSyncClip is only set to false in a call that happens when we've just finished recording that Clip.
-void Song::setClipLength(Clip* clip, uint32_t newLength, Action* action, bool mayReSyncClip) {
+// With mayResumeClip false, the caller resumes playback of the Clip itself. With mayChangeClipInstances false, the
+// Clip's instances in the arrangement keep their lengths.
+void Song::setClipLength(Clip* clip, uint32_t newLength, Action* action, bool mayReSyncClip, bool mayResumeClip,
+                         bool mayChangeClipInstances) {
 	uint32_t oldLength = clip->loopLength;
 
 	if (clip == syncScalingClip) {
@@ -996,7 +999,9 @@ void Song::setClipLength(Clip* clip, uint32_t newLength, Action* action, bool ma
 		clip->lengthChanged(modelStack, oldLength, action);
 	}
 
-	clip->output->clipLengthChanged(clip, oldLength);
+	if (mayChangeClipInstances) {
+		clip->output->clipLengthChanged(clip, static_cast<int32_t>(oldLength));
+	}
 
 	if (playbackHandler.isEitherClockActive() && isClipActive(clip)) {
 
@@ -1010,7 +1015,9 @@ void Song::setClipLength(Clip* clip, uint32_t newLength, Action* action, bool ma
 			playbackHandler.expectEvent(); // Is this maybe redundant now that Arranger has a reSyncClip()?
 		}
 
-		clip->resumePlayback(modelStack);
+		if (mayResumeClip) {
+			clip->resumePlayback(modelStack);
+		}
 	}
 }
 
@@ -2513,7 +2520,9 @@ void Song::renderAudio(std::span<StereoSample> outputBuffer, int32_t* reverbBuff
 	ModelStack* modelStack = setupModelStackWithSong(modelStackMemory, this);
 
 	AudioEngine::logAction("Start output render");
-	for (Output* output = firstOutput; output; output = output->next) {
+	for (Output *output = firstOutput, *next; output; output = next) {
+		// Read alongside inValidState (same cache line): rendering this Output often evicts it
+		next = output->next;
 		if (!output->inValidState) {
 			continue;
 		}
@@ -4830,7 +4839,7 @@ bool Song::shouldOldOutputBeReplaced(Clip* clip, Availability* availabilityRequi
 	}
 }
 
-Output* Song::navigateThroughPresetsForInstrument(Output* output, int32_t offset) {
+Output* Song::navigateThroughPresetsForInstrument(Output* output, int32_t offset, Clip* displayClip) {
 	if (output->type == OutputType::AUDIO) {
 		return output;
 	}
@@ -4931,13 +4940,13 @@ Output* Song::navigateThroughPresetsForInstrument(Output* output, int32_t offset
 			((MIDIInstrument*)oldNonAudioInstrument)->channelSuffix = newChannelSuffix;
 		}
 
-		view.displayOutputName(oldNonAudioInstrument);
+		view.displayOutputName(oldNonAudioInstrument, true, displayClip);
 	}
 
 	// Or if we're on a Kit or Synth...
 	else {
-		PresetNavigationResult results =
-		    loadInstrumentPresetUI.doPresetNavigation(offset, oldInstrument, Availability::INSTRUMENT_UNUSED, true);
+		PresetNavigationResult results = loadInstrumentPresetUI.doPresetNavigation(
+		    offset, oldInstrument, Availability::INSTRUMENT_UNUSED, true, displayClip);
 		if (results.error == Error::NO_ERROR_BUT_GET_OUT) {
 removeWorkingAnimationAndGetOut:
 			if (display->haveOLED()) {
@@ -5980,7 +5989,7 @@ doHibernatingInstruments:
 }
 
 void Song::getCurrentRootNoteAndScaleName(StringBuf& buffer) {
-	char noteName[5];
+	char noteName[kNoteCodeStringBufferSize];
 	int32_t isNatural = 1; // gets modified inside noteCodeToString to be 0 if sharp.
 	noteCodeToString(currentSong->key.rootNote, noteName, &isNatural);
 
